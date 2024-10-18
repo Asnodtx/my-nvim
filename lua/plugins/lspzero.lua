@@ -6,8 +6,6 @@ return {
 			ensure_installed = {
 				"eslint-lsp",
 				"prettierd",
-				"tailwindcss-language-server",
-				"typescript-language-server",
 			},
 		},
 		config = function()
@@ -27,7 +25,7 @@ return {
 		config = function()
 			local lspconfig = require("lspconfig")
 
-			local servers = { "ts_ls", "tailwindcss", "eslint" }
+			local servers = { "ts_ls", "tailwindcss", "eslint", "jdtls" }
 
 			for _, lsp in ipairs(servers) do
 				lspconfig[lsp].setup({
@@ -39,6 +37,35 @@ return {
 			vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, {})
 			vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, {})
 			vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
+		end,
+	},
+	{
+		"mfussenegger/nvim-jdtls",
+		ft = "java",
+		config = function()
+			local config = {
+				cmd = { "jdtls" },
+				root_dir = vim.fs.dirname(
+					vim.fs.find({ "gradlew", ".git", "mvnw", "mvn", "pom.xml" }, { upward = true })[1]
+				),
+				settings = {
+					java = {
+						configuration = {
+							runtimes = {
+								{
+									name = "JavaSE-11",
+									path = "/lib/jvm/java-11-openjdk/",
+								},
+								{
+									name = "JavaSE-23",
+									path = "/lib/jvm/java-23-openjdk/",
+								},
+							},
+						},
+					},
+				},
+			}
+			require("jdtls").start_or_attach(config)
 		end,
 	},
 }
